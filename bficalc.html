@@ -1,0 +1,101 @@
+<!doctype html>
+
+<html ng-app="mainApp">
+    <head>
+        <title>bficalc</title>
+        <script
+            src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js">
+        </script>
+        <link rel="stylesheet"
+              href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src="mainApp.js"></script>
+        <script src="blowBucketController.js"></script>
+        <script src="mojoBucketController.js"></script>
+    </head>
+    <body>
+        <h1>bficalc</h1>
+        <div ng-controller="blowBucketController">
+            <h2>Blow</h2>
+            <p>Total: {{blowBucket.getTotalAmount() | currency}}</p>
+            <div ng-repeat="(accountName, items) in blowBucket.accounts">
+                <h3>{{accountName}}</h3>
+                <table>
+                    <tr ng-repeat="(itemName, amount) in items">
+                        <td>{{itemName}}:</td>
+                        <td><input type="number" step="0.01"
+                             ng-model="items[itemName]"></td>
+                        <td>{{blowBucket.getItemPercentage(accountName,
+                                                           itemName)
+                              | number : 1}}%</td>
+                        <td>
+                            <button
+                             ng-click="blowBucket.removeItem(accountName,
+                                                             itemName)">Remove
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" name="itemName"
+                             ng-model="blowBucket.newItem[accountName].name"
+                             placeholder="Add item">
+                        </td>
+                        <td><input type="number"
+                             ng-model=
+                             "blowBucket.newItem[accountName].amount"
+                             placeholder="Item amount">
+                        </td>
+                        <td></td>
+                        <td>
+                            <button
+                             ng-click="blowBucket.addItem(accountName)">Add
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td>{{blowBucket.getAccountAmount(accountName)
+                              | currency}}</td>
+                        <td>{{blowBucket.getAccountPercentage(accountName)
+                              | number : 1}}%</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div ng-controller="mojoBucketController">
+            <h2>Mojo</h2>
+            <p>Target: {{mojoBucket.getTargetAmount() | currency}}</p>
+            <p>Current: <input type="number" step="0.01"
+                         ng-model="mojoBucket.currentAmount"
+                         onkeypress="updateProgressBar()"
+                         placeholder="Mojo amount">
+               {{mojoBucket.getPercentage() | number : 1}}%
+            </p>
+            <div id="pctg"
+             ng-hide="true">{{mojoBucket.getPercentage() | number : 0}}</div>
+            <script>
+function updateProgressBar() {
+    let val = +$('#pctg').text();
+
+    if (val > 100) {
+        val = 100;
+    }
+
+    $('#mojoProgressBar').progressbar({
+        value: val
+    });
+}
+
+$(() => {
+    $('#mojoProgressBar').progressbar({
+        min: 0,
+        max: 100
+    });
+});
+            </script>
+            <div id="mojoProgressBar"></div>
+        </div>
+    </body>
+</html>
